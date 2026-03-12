@@ -117,6 +117,18 @@ public class Snake extends GameApplication {
                 direction = new Point2D(1, 0);
         });
 
+         FXGL.onKeyDown(KeyCode.Q, () -> {
+            var stage = FXGL.getPrimaryStage();
+
+            if (stage.getWidth() < 1000) {
+                stage.setWidth(1200);
+                stage.setHeight(800);
+            } else {
+                stage.setWidth(800);
+                stage.setHeight(600);
+            }
+        });
+
         FXGL.onKeyDown(KeyCode.ENTER, () -> {
             if (gameOver) {
                 FXGL.getGameController().startNewGame();
