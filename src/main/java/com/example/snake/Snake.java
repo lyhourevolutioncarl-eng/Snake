@@ -16,7 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-public class Snake extends GameApplication {
+public class SnakeGame extends GameApplication {
 
     private static final int TILE_SIZE = 20;
     private static final int GRID_WIDTH = 30;
@@ -29,11 +29,10 @@ public class Snake extends GameApplication {
     private boolean gameOver = false;
     private int score = 0;
 
-    private double speed = 0.15; ////////////////////////////////
+    private double speed = 0.15;
 
     private Point2D bonus;
     private boolean bonusVisible = false;
-
 
     private void spawnbonus() {
         Random random = new Random();
@@ -61,7 +60,6 @@ public class Snake extends GameApplication {
         }
     }
 
-
     @Override
     protected void initSettings(GameSettings settings) {
         settings.setWidth(GRID_WIDTH * TILE_SIZE);
@@ -82,18 +80,19 @@ public class Snake extends GameApplication {
         direction = new Point2D(1, 0);
         score = 0;
         gameOver = false;
+        speed = 0.15;
 
         spawnFood();
         spawnbonus();
 
         startGameLoop();
     }
-//////////////////////
+
     private void startGameLoop() {
         FXGL.getGameTimer().clear();
         FXGL.getGameTimer().runAtInterval(this::updateGame, Duration.seconds(speed));
     }
-/// ////////////////////////
+
     @Override
     protected void initInput() {
 
@@ -117,7 +116,7 @@ public class Snake extends GameApplication {
                 direction = new Point2D(1, 0);
         });
 
-         FXGL.onKeyDown(KeyCode.Q, () -> {
+        FXGL.onKeyDown(KeyCode.Q, () -> {
             var stage = FXGL.getPrimaryStage();
 
             if (stage.getWidth() < 1000) {
@@ -151,9 +150,10 @@ public class Snake extends GameApplication {
         snake.add(0, newHead);
         snake.remove(snake.size() - 1);
     }
-/// /////////////////////////////////////
+
     private void checkFood() {
         if (snake.get(0).equals(food)) {
+
             snake.add(snake.get(snake.size() - 1));
             score++;
 
@@ -161,10 +161,22 @@ public class Snake extends GameApplication {
                 spawnbonus();
             }
 
+            // Increase speed every 5 points
+            if (score % 5 == 0) {
+
+                speed -= 0.02;   // snake moves faster
+
+                if (speed < 0.03) {   // limit minimum speed
+                    speed -= 0.02;
+                }
+
+                startGameLoop();   // restart timer with new speed
+            }
+
             spawnFood();
         }
     }
-/// /////////////////////////////////////////////////////////////
+
     private void checkCollision() {
         Point2D head = snake.get(0);
 
@@ -228,6 +240,7 @@ public class Snake extends GameApplication {
         FXGL.getGameScene().addUINode(scoreText);
 
         if (gameOver) {
+
             Rectangle overlay = new Rectangle(
                     GRID_WIDTH * TILE_SIZE,
                     GRID_HEIGHT * TILE_SIZE
